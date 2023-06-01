@@ -1,0 +1,12 @@
+{
+  "name": "carritocomprasapi",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "mysql2": "^3.3.3"
+  }
+}
