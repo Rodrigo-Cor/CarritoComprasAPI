@@ -13,15 +13,18 @@ module.exports = async function (context, req) {
         port: 3306,
     });
 
+    let conexion = true;
     connection.connect((error) => {
         if (error) {
-            console.error('Error de conexión:', error);
+            conexion = false;
+    //        console.error('Error de conexión:', error);
             return;
         }
-        console.log('Conexión exitosa!');
+        conexion = "Conexión exitosa!"
+    //    console.log('Conexión exitosa!');
     });
 
-    const responseMessage = __dirname + "/rds-combined-ca-bundle.pem";
+    const responseMessage = conexion;
 
     /*
     const responseMessage = name
