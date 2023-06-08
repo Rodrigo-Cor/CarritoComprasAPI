@@ -22,7 +22,7 @@ module.exports = async function (context, req) {
                 id: row.id,
                 nombre: row.nombre,
                 precio: row.precio,
-                foto: Buffer.from(row.foto).toString('base64'),
+                foto: Buffer.from(row.foto).toString('utf-8'),
                 cantidad: row.cantidad
             }));
 

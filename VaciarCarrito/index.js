@@ -31,6 +31,10 @@ module.exports = async function (context, req) {
             body: 'El carrito de compras se ha vaciado correctamente'
         };
     } catch (error) {
+        if (connection) {
+            await connection.rollback();
+            connection.end();
+        }
         context.res = {
             status: 500,
             body: `Error en la transacción: ${error.message}`

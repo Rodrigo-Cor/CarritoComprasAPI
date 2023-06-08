@@ -28,7 +28,7 @@ module.exports = async function (context, req) {
             nombre: row.nombre,
             descripcion: row.descripcion,
             precio: row.precio,
-            foto: Buffer.from(row.foto).toString('base64')
+            foto: Buffer.from(row.foto).toString('utf-8')
         }));
 
         context.res = {

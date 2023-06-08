@@ -5,7 +5,6 @@ module.exports = async function (context, req) {
 
     try {
         const connection = await connectDB();
-
         await connection.beginTransaction();
 
         const { id, cantidad } = req.body;
@@ -72,6 +71,10 @@ module.exports = async function (context, req) {
         };
 
     } catch (error) {
+        if (connection) {
+            await connection.rollback();
+            connection.end();
+        }
         context.res = {
             status: 500,
             body: `Error en la transacción: ${error.message}`
