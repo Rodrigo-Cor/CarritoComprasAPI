@@ -17,8 +17,13 @@ module.exports = async function (context, req) {
         // Si no se encuentra el artículo, regresar un mensaje de error
         if (rows.length === 0) {
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 404,
-                body: 'No se encontró el artículo solicitado'
+                body: {
+                    message: 'No se encontró el artículo solicitado'
+                }
             };
             await connection.rollback();
             connection.end();
@@ -35,14 +40,19 @@ module.exports = async function (context, req) {
         // Si no se encuentra el artículo en el carrito de compras, regresar un mensaje de error
         if (rows2.length === 0) {
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 404,
-                body: 'El artículo no está en el carrito de compras'
+                body: {
+                    message: 'El artículo no está en el carrito de compras'
+                }
             };
             await connection.rollback();
             connection.end();
             return;
         }
-        
+
         // Obtener la cantidad del artículo en el carrito de compras
         const cantidadEnCarrito = rows2[0].cantidad;
 
@@ -58,13 +68,23 @@ module.exports = async function (context, req) {
         connection.end();
 
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 200,
-            body: 'Artículo eliminado del carrito de compras'
+            body: {
+                message: 'Artículo eliminado del carrito de compras'
+            }
         };
     } catch (error) {
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 500,
-            body: `Error en la transacción: ${error.message}`
+            body: {
+                message: `Error en la transacción: ${error.message}`
+            }
         };
     }
 };

@@ -3,19 +3,26 @@ const { connectDB } = require('../globalFunctions.js');
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
+    let connection;
+
     try {
-        const connection = await connectDB();
+        connection = await connectDB();
         await connection.beginTransaction();
 
         const { id, cantidad } = req.body;
 
-        const query = 'SELECT cantidad FROM articulos WHERE id = ?';
+        const query = 'SELECT cantidad, nombre FROM articulos WHERE id = ?';
         const [rows] = await connection.query(query, [id]);
 
         if (rows.length === 0) {
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 404,
-                body: 'No se encontró el artículo solicitado'
+                body: {
+                    message: 'No se encontró el artículo solicitado'
+                }
             };
             await connection.rollback();
             connection.end();
@@ -23,6 +30,7 @@ module.exports = async function (context, req) {
         }
 
         const cantidadEnBaseDatos = rows[0].cantidad;
+        const nombre = rows[0].nombre;
 
         const query2 = 'SELECT cantidad FROM carrito_compra WHERE id_articulo = ?';
         const [rows2] = await connection.query(query2, [id]);
@@ -33,11 +41,15 @@ module.exports = async function (context, req) {
         }
 
         const cantidadNueva = cantidad - cantidadEnCarrito;
-
         if (cantidadNueva > cantidadEnBaseDatos) {
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 404,
-                body: 'No hay suficiente stock para el artículo solicitado'
+                body: {
+                    message: `No hay suficiente stock para ${nombre}. Se encuentra disponible ${cantidadEnBaseDatos}`
+                }
             };
             await connection.rollback();
             connection.end();
@@ -66,8 +78,13 @@ module.exports = async function (context, req) {
         connection.end();
 
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 200,
-            body: 'Artículo agregado al carrito de compras'
+            body: {
+                message: 'Artículo agregado al carrito de compras'
+            }
         };
 
     } catch (error) {
@@ -76,8 +93,13 @@ module.exports = async function (context, req) {
             connection.end();
         }
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 500,
-            body: `Error en la transacción: ${error.message}`
+            body: {
+                message: `Error en la transacción: ${error.message}`
+            }
         };
     }
 };

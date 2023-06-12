@@ -11,12 +11,13 @@ module.exports = async function (context, req) {
         if (!busqueda) {
             context.res = {
                 status: 400,
-                body: 'La consulta de búsqueda es requerida'
+                body: JSON.stringify({ message: 'La consulta de búsqueda es requerida' })
             };
             return;
         }
 
-        const sql = 'SELECT id, nombre, descripcion, precio, foto FROM articulos WHERE nombre LIKE ? OR descripcion LIKE ?';
+        const sql =
+            'SELECT id, nombre, descripcion, precio, foto FROM articulos WHERE nombre LIKE ? OR descripcion LIKE ?';
         const searchTerm = `%${busqueda}%`;
 
         const [results] = await connection.query(sql, [searchTerm, searchTerm]);
@@ -32,25 +33,24 @@ module.exports = async function (context, req) {
         }));
 
         context.res = {
-            body: articulos
+            body: JSON.stringify(articulos)
         };
-
     } catch (error) {
         if (error.code === 'ER_ACCESS_DENIED_ERROR') {
             context.res = {
                 status: 503,
-                body: 'Error al conectar con la base de datos: Acceso denegado'
+                body: JSON.stringify({ message: 'Acceso denegado' })
             };
         } else if (error.code === 'ENOTFOUND') {
             context.res = {
                 status: 503,
-                body: 'Error al conectar con la base de datos: No se encontró el host'
+                body: JSON.stringify({ message: 'Error al conectar con la base de datos' })
             };
         } else {
             console.log(error.message);
             context.res = {
                 status: 500,
-                body: 'Error al realizar la búsqueda en la base de datos'
+                body: JSON.stringify({ message: 'Error al realizar la búsqueda' })
             };
         }
     }

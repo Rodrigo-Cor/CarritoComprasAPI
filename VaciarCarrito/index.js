@@ -3,8 +3,10 @@ const { connectDB } = require('../globalFunctions.js');
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
 
+    let connection;
+
     try {
-        const connection = await connectDB();
+        connection = await connectDB();
         await connection.beginTransaction();
 
         // Obtener todos los registros del carrito de compras
@@ -27,8 +29,13 @@ module.exports = async function (context, req) {
         connection.end();
 
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 200,
-            body: 'El carrito de compras se ha vaciado correctamente'
+            body: {
+                message: 'El carrito de compras se ha vaciado correctamente'
+            }
         };
     } catch (error) {
         if (connection) {
@@ -36,8 +43,13 @@ module.exports = async function (context, req) {
             connection.end();
         }
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 500,
-            body: `Error en la transacción: ${error.message}`
+            body: {
+                message: `Error en la transacción: ${error.message}`
+            }
         };
     }
 };

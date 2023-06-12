@@ -14,8 +14,11 @@ module.exports = async function (context, req) {
 
         if (rows.length === 0) {
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 200,
-                body: 'El carrito de compras está vacío'
+                body: []
             };
         } else {
             const articulosCarrito = rows.map((row) => ({
@@ -27,6 +30,9 @@ module.exports = async function (context, req) {
             }));
 
             context.res = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 status: 200,
                 body: articulosCarrito
             };
@@ -35,8 +41,13 @@ module.exports = async function (context, req) {
         connection.end();
     } catch (error) {
         context.res = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
             status: 500,
-            body: `Error al realizar la búsqueda en la base de datos: ${error.message}`
+            body: {
+                message: `Error al realizar la búsqueda en la base de datos: ${error.message}`
+            }
         };
     }
 };

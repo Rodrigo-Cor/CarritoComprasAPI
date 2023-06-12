@@ -8,7 +8,10 @@ module.exports = async function (context, req) {
     if (!nombre || !descripcion || typeof nombre !== 'string' || typeof descripcion !== 'string' || nombre.trim() === '' || descripcion.trim() === '') {
         context.res = {
             status: 400,
-            body: 'El nombre y la descripción son obligatorios y deben ser cadenas de texto'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'El nombre y la descripción son obligatorios y deben ser cadenas de texto' })
         };
         return;
     }
@@ -17,7 +20,10 @@ module.exports = async function (context, req) {
     if (typeof precio !== 'number' && isNaN(Number(precio))) {
         context.res = {
             status: 400,
-            body: 'El precio debe ser un número válido'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'El precio debe ser un número válido' })
         };
         return;
     }
@@ -26,7 +32,10 @@ module.exports = async function (context, req) {
     if (!Number.isInteger(Number(cantidad))) {
         context.res = {
             status: 400,
-            body: 'La cantidad debe ser un número entero'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'La cantidad debe ser un número entero' })
         };
         return;
     }
@@ -34,7 +43,10 @@ module.exports = async function (context, req) {
     if (!isBase64(foto)) {
         context.res = {
             status: 400,
-            body: 'La foto debe estar en formato Base64'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'La foto debe estar en formato Base64' })
         };
         return;
     }
@@ -52,24 +64,36 @@ module.exports = async function (context, req) {
 
         context.res = {
             status: 201,
-            body: 'Articulo insertado correctamente'
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'Articulo insertado correctamente' })
         };
 
     } catch (error) {
         if (error.code === 'ER_ACCESS_DENIED_ERROR') {
             context.res = {
                 status: 503,
-                body: 'Error al conectar con la base de datos: Acceso denegado'
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: 'Error al conectar con la base de datos: Acceso denegado' })
             };
         } else if (error.code === 'ENOTFOUND') {
             context.res = {
                 status: 503,
-                body: 'Error al conectar con la base de datos: No se encontró el host'
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: 'Error al conectar con la base de datos: No se encontró el host' })
             };
         } else {
             context.res = {
                 status: 500,
-                body: `Error al insertar el artículo en la base de datos: ${error.message}`
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: 'Error al insertar el artículo en la base de datos'})
             };
         }
     }
